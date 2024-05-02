@@ -2,6 +2,8 @@ import 'dotenv/config';
 import { errorMessage } from '../helpers/message.js';
 import { validateLogin, validateRegister } from '../helpers/validate.js';
 import jwt from 'jsonwebtoken';
+import { createUser, getUserByEmail } from '../services/user.service.js';
+import bcrypt from 'bcrypt';
 
 const secretKey = process.env.SECRET_KEY;
 const tokenOptions = { expiresIn: '120s' };
@@ -10,22 +12,37 @@ export const login = async (req, res) => {
   try {
     validateLogin(req);
 
-    const { email, password } = req.query;
+    const { email, password } = req.body;
 
-    const agente = agentes.find(
-      (agente) => agente.email === email && agente.password === password
-    );
-
-    if (!agente) {
-      return res.status(401).json({ message: 'credenciales inválidas' });
+    const user = await getUserByEmail(email);
+    
+    if (!user) {
+      throw new Error('Credenciales incorrectas');
     }
 
-    const token = jwt.sign(agente, secretKey, tokenOptions);
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      throw new Error('Credenciales incorrectas');
+    }
+
+    const userCreated = {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      specialty: user.specialty,
+      expertise: user.expertise,
+      status: user.status,
+    };
+
+    const token = jwt.sign({
+      user: userCreated,
+    }, secretKey, tokenOptions);
 
     res.status(200).json({
       status: 'Ok',
       token: token,
-      loggedUser: { email },
+      loggedUser: userCreated,
     });
   } catch (error) {
     errorMessage(error.message);
@@ -33,31 +50,44 @@ export const login = async (req, res) => {
   }
 };
 
-
 export const register = async (req, res) => {
   try {
-    console.log(req);
     validateRegister(req);
 
-    const { email, password } = req.query;
+    const { name, email, password, specialty, expertise } = req.body;
 
-    const agente = agentes.find(
-      (agente) => agente.email === email && agente.password === password
+    const user = await createUser({
+      name,
+      email,
+      password,
+      specialty,
+      expertise,
+    });
+
+    const userCreated = {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      specialty: user.specialty,
+      expertise: user.expertise,
+      status: user.status,
+    };
+
+    const token = jwt.sign(
+      {
+        user: userCreated,
+      },
+      secretKey,
+      tokenOptions
     );
-
-    if (!agente) {
-      return res.status(401).json({ message: 'credenciales inválidas' });
-    }
-
-    const token = jwt.sign(agente, secretKey, tokenOptions);
 
     res.status(200).json({
       status: 'Ok',
       token: token,
-      loggedUser: { email },
+      loggedUser: userCreated,
     });
   } catch (error) {
     errorMessage(error.message);
     return res.status(500).json({ message: error.message });
   }
-}
+};
