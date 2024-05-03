@@ -4,8 +4,11 @@ import { validateLogin, validateRegister } from '../helpers/validate.js';
 import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../services/user.service.js';
 import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const secretKey = process.env.SECRET_KEY;
+const urlServer = process.env.URL_SERVER;
 const tokenOptions = { expiresIn: '120s' };
 
 export const login = async (req, res) => {
@@ -33,6 +36,7 @@ export const login = async (req, res) => {
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
+      photo: urlServer +"/"+ user.photo,
     };
 
     const token = jwt.sign({
@@ -56,12 +60,23 @@ export const register = async (req, res) => {
 
     const { name, email, password, specialty, expertise } = req.body;
 
+    // si req.files es null, photo sera null.
+    const photo = req.files?.photo;
+
+    let newName = null;
+    if (photo) {
+      const extension = photo.name.split('.').pop();
+      newName = `${uuidv4()}.${extension}`;
+      await photo.mv(`./src/uploads/${newName}`);
+    }
+
     const user = await createUser({
       name,
       email,
       password,
       specialty,
       expertise,
+      photo: newName,
     });
 
     const userCreated = {
@@ -71,6 +86,7 @@ export const register = async (req, res) => {
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
+      photo: urlServer +"/"+ user.photo,
     };
 
     const token = jwt.sign(
