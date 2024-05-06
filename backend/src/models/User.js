@@ -44,7 +44,7 @@ User.init(
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: false,
     },
   },
   { sequelize, modelName: "User", tableName: "users", timestamps: false }

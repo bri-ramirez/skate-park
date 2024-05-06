@@ -1,11 +1,22 @@
 import { getAllUsers, getUserById, updateUser, deleteUser } from '../services/user.service.js';
 import { errorMessage } from '../helpers/message.js';
 
-
-
 export const getUsers = async (req, res) => {
   try {
-    const users = await getAllUsers();
+    const results = await getAllUsers();
+
+    const users = results.map(user => {
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        specialty: user.specialty,
+        expertise: user.expertise,
+        photo: user.photo ? `${process.env.URL_SERVER}/static/${user.photo}` : null,
+        status: user.status,
+      }
+    });
+
     res.status(200).json({
       status: 'Ok',
       users,
@@ -24,12 +35,12 @@ export const approveUser = async (req, res) => {
       throw new Error('Usuario no encontrado');
     }
 
-    user.status = true;
+    user.status = !user.status;
     await user.save();
 
     res.status(200).json({
       status: 'Ok',
-      message: 'Usuario aprobado correctamente',
+      message: 'Usuario actualizado correctamente',
     });
   } catch (error) {
     errorMessage(error.message);

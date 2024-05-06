@@ -12,20 +12,23 @@ export const createUser = async (user) => {
 
 export const getUserByEmail = async (email) => {
   const user = await User.findOne({
-    where: { email, status: true },
+    where: { email },
   });
   return user;
 };
 
 export const getAllUsers = async () => {
-  const users = await User.findAll({ where: { role: 'user' }});
+  const users = await User.findAll({
+    where: { role: 'user' },
+    order: [['id', 'ASC']],
+  });
   return users;
 };
 
 export const getUserById = async (id) => {
   const user = await User.findByPk(id);
   return user;
-}
+};
 
 export const updateUser = async (id, user) => {
   const userFound = await User.findByPk(id);
@@ -35,7 +38,7 @@ export const updateUser = async (id, user) => {
 
   const userUpdated = await userFound.update(user);
   return userUpdated;
-}
+};
 
 export const deleteUser = async (id) => {
   const user = await User.findByPk(id);
@@ -45,4 +48,4 @@ export const deleteUser = async (id) => {
 
   await user.destroy();
   return true;
-}
+};

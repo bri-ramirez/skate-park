@@ -13,7 +13,7 @@ const router = Router();
 
 router.get('/:id', auth, getUser);
 router.get('/', getUsers);
-router.get('/approve/:id', auth, approveUser);
+router.put('/approve/:id', auth, approveUser);
 router.put('/:id', auth, update);
 router.delete('/:id', auth, remove);
 

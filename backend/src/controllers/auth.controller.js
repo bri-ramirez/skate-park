@@ -6,10 +6,9 @@ import { createUser, getUserByEmail } from '../services/user.service.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-
 const secretKey = process.env.SECRET_KEY;
 const urlServer = process.env.URL_SERVER;
-const tokenOptions = { expiresIn: '120s' };
+const tokenOptions = { expiresIn: '30m' };
 
 export const login = async (req, res) => {
   try {
@@ -30,13 +29,14 @@ export const login = async (req, res) => {
     }
 
     const userCreated = {
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
-      photo: urlServer +"/"+ user.photo,
+      photo: urlServer +"/static/"+ user.photo,
     };
 
     const token = jwt.sign({
@@ -86,7 +86,7 @@ export const register = async (req, res) => {
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
-      photo: urlServer +"/"+ user.photo,
+      photo: urlServer +"/static/"+ user.photo,
     };
 
     const token = jwt.sign(

@@ -4,7 +4,16 @@ const secretKey = process.env.SECRET_KEY;
 
 export const auth = (req, res, next) => {
   try {
-    const { token } = req.query;
+    if (!req.headers.authorization) {
+      return res
+        .status(401)
+        .json({
+          status: 401,
+          message: 'Usuario no autorizado, por favor inicia sesión',
+        });
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
 
     jwt.verify(token, secretKey, (err, data) => {
       err
@@ -12,7 +21,7 @@ export const auth = (req, res, next) => {
             .status(401)
             .json({
               status: 401,
-              message: 'Usuario no autorizado, por favor inicar sesión',
+              message: 'Usuario no autorizado, por favor inicia sesión',
             })
         : next();
     });
