@@ -2,6 +2,7 @@ import { register } from './api.js';
 import toast from './toast.js';
 
 const formRegister = document.getElementById('formRegister');
+const textError = document.getElementsByClassName('form-error')[0];
 
 $(() => {
   // check if token exists
@@ -11,6 +12,9 @@ $(() => {
     window.location.href = './index.html';
   }
 });
+
+console.log('textError', textError)
+
 
 formRegister.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -23,8 +27,13 @@ formRegister.addEventListener('submit', async (e) => {
   const specialty = document.getElementById('specialty').value;
   const photo = document.getElementById('photo').files[0];
 
+
+  console.log('textError', textError)
+
   if(password !== confirmPassword) {
     toast.error('Las contraseñas no coinciden');
+    
+    textError.textContent = 'Las contraseñas no coinciden';
     return;
   }
   
@@ -45,14 +54,18 @@ formRegister.addEventListener('submit', async (e) => {
 
     if(response.status === 'Ok') {
       sessionStorage.setItem('token', response.token);
+      sessionStorage.setItem('user', JSON.stringify(response.loggedUser));
       toast.success('Usuario registrado correctamente');
       window.location.href = './index.html';
     }
+
+    textError.textContent = response.message;
 
     toast.error('Error al registrar usuario');
 
   } catch (error) {
     console.log('ERROR', error)
+    textError.textContent = error.message;
     toast.error('Error al registrar usuario');
   }
 });

@@ -1,5 +1,6 @@
 import { updateUser, deleteUser } from './api.js';
 import toast from './toast.js';
+import { setUser } from './utils/auth.js';
 
 let user = null;
 const updateForm = document.getElementById('updateForm');
@@ -67,6 +68,7 @@ updateForm.addEventListener('submit', async (e) => {
 
   if(response.status === 'Ok') {
     toast.success('Usuario actualizado correctamente');
+    setUser(response.user);
     return;
   }
 

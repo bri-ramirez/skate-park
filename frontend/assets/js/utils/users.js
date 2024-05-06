@@ -39,7 +39,7 @@ export const setListUsers = async (listElement) => {
         <td>${user.name}</td>
         <td>${user.expertise}</td>
         <td>${user.specialty}</td>
-        <td>${ isAdmin ? statusRoleAdmin : statusRoleUser }</td>
+        <td>${ isAdmin() ? statusRoleAdmin : statusRoleUser }</td>
         </td>
       </tr>
     `;

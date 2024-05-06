@@ -87,7 +87,16 @@ export const update = async (req, res) => {
 
     res.status(200).json({
       status: 'Ok',
-      user: userUpdated,
+      user: {
+        id: userUpdated.id,
+        name: userUpdated.name,
+        email: userUpdated.email,
+        role: userUpdated.role,
+        specialty: userUpdated.specialty,
+        expertise: userUpdated.expertise,
+        status: userUpdated.status,
+        photo: userUpdated.photo ? `${process.env.URL_SERVER}/static/${userUpdated.photo}` : null,
+      },
     });
   } catch (error) {
     errorMessage(error.message);

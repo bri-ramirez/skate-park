@@ -36,7 +36,7 @@ export const login = async (req, res) => {
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
-      photo: urlServer +"/static/"+ user.photo,
+      photo: user.photo ? `${urlServer}/static/${user.photo}` : null,
     };
 
     const token = jwt.sign({
@@ -60,6 +60,11 @@ export const register = async (req, res) => {
 
     const { name, email, password, specialty, expertise } = req.body;
 
+    const userExists = await getUserByEmail(email);
+    if (userExists) {
+      throw new Error('El email ya está registrado');
+    }
+
     // si req.files es null, photo sera null.
     const photo = req.files?.photo;
 
@@ -80,13 +85,14 @@ export const register = async (req, res) => {
     });
 
     const userCreated = {
+      id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
       specialty: user.specialty,
       expertise: user.expertise,
       status: user.status,
-      photo: urlServer +"/static/"+ user.photo,
+      photo: user.photo ? `${urlServer}/static/${user.photo}` : null,
     };
 
     const token = jwt.sign(

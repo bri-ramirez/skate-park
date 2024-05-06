@@ -12,6 +12,10 @@ export const getUser = () => {
   return JSON.parse(sessionStorage.getItem('user'));
 }
 
+export const setUser = (user) => {
+  sessionStorage.setItem('user', JSON.stringify(user));
+}
+
 export const getToken = () => {
   return sessionStorage.getItem('token');
 }

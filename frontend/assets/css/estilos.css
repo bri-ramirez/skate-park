@@ -51,3 +51,8 @@ input {
   margin-right: 10px;
   object-fit: cover;
 }
+
+.form-error {
+  color: red;
+  font-size: 12px;
+}
