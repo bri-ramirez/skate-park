@@ -1,4 +1,5 @@
 
+import { isAdmin } from './utils/auth.js';
 import { setListUsers } from './utils/users.js';
 const usersList = document.getElementById('tbody_list_users');
 
